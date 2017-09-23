@@ -11,6 +11,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -100,6 +101,29 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onComplete() {
                 Log.d(TAG, "onComplete: ");
+            }
+        });
+    }
+
+    public void onConsumerClicked(View view) {
+        Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<Integer> e) throws Exception {
+                Log.d(TAG, "subscribe: emit 1");
+                e.onNext(1);
+                Log.d(TAG, "subscribe: emit 2");
+                e.onNext(2);
+                Log.d(TAG, "subscribe: emit 3");
+                e.onNext(3);
+                Log.d(TAG, "subscribe: onComplete");
+                e.onComplete();
+                Log.d(TAG, "subscribe: emit 4");
+                e.onNext(4);
+            }
+        }).subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+                Log.d(TAG, "accept: " + integer);
             }
         });
     }
