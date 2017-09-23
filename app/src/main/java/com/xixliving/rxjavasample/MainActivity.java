@@ -54,4 +54,53 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void onDisposableClicked(View view) {
+        Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<Integer> e) throws Exception {
+                Log.d(TAG, "subscribe: emit 1");
+                e.onNext(1);
+                Log.d(TAG, "subscribe: emit 2");
+                e.onNext(2);
+                Log.d(TAG, "subscribe: emit 3");
+                e.onNext(3);
+                Log.d(TAG, "subscribe: onComplete");
+                e.onComplete();
+                Log.d(TAG, "subscribe: emit 4");
+                e.onNext(4);
+            }
+        }).subscribe(new Observer<Integer>() {
+            private Disposable _disposable;
+            private int i;
+
+            @Override
+            public void onSubscribe(@NonNull Disposable d) {
+                Log.d(TAG, "onSubscribe: ");
+                _disposable = d;
+            }
+
+            @Override
+            public void onNext(@NonNull Integer integer) {
+                Log.d(TAG, "onNext: " + integer);
+                i++;
+                if (i == 2) {
+                    // Disconnect from Observable
+                    Log.d(TAG, "dispose");
+                    _disposable.dispose();
+                    Log.d(TAG, "isDisposed: " + _disposable.isDisposed());
+                }
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) {
+                Log.d(TAG, "onError: " + e );
+            }
+
+            @Override
+            public void onComplete() {
+                Log.d(TAG, "onComplete: ");
+            }
+        });
+    }
 }
