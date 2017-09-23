@@ -23,7 +23,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onSample1Clicked(View view) {
-        Observable<Integer> observable = Observable.create(new ObservableOnSubscribe<Integer>() {
+
+        Observable.create(new ObservableOnSubscribe<Integer>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<Integer> e) throws Exception {
                 e.onNext(1);
@@ -31,9 +32,7 @@ public class MainActivity extends AppCompatActivity {
                 e.onNext(3);
                 e.onComplete();
             }
-        });
-
-        Observer<Integer> observer = new Observer<Integer>() {
+        }).subscribe(new Observer<Integer>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
                 Log.d(TAG, "onSubscribe: " + d);
@@ -53,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete() {
                 Log.d(TAG, "onComplete: ");
             }
-        };
-
-        observable.subscribe(observer);
+        });
     }
 }
