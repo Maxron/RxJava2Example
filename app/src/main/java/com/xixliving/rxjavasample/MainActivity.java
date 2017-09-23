@@ -5,6 +5,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -126,5 +130,37 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "accept: " + integer);
             }
         });
+    }
+
+    public void onFlowableClicked(View view) {
+        Flowable.range(1, 10)
+                .subscribe(new Subscriber<Integer>() {
+                    @Override
+                    public void onSubscribe(Subscription s) {
+                        Log.d(TAG, "onSubscribe: Start");
+                        s.request(Long.MAX_VALUE);
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+                        try {
+                            Thread.sleep(1000);
+                            Log.d(TAG, "onNext: " + integer);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        Log.d(TAG, "onError: ");
+                        t.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "onComplete: ");
+                    }
+                });
     }
 }
