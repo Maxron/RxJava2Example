@@ -8,14 +8,19 @@ import android.view.View;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -162,5 +167,44 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG, "onComplete: ");
                     }
                 });
+    }
+
+    public void onFlowableRequestClicked(View view) {
+        Flowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(@NonNull FlowableEmitter<Integer> e) throws Exception {
+                for (int i = 0; i < 129; i++) {
+                    Log.d(TAG, "subscribe: emmit " + i);
+                    e.onNext(i);
+                }
+                e.onComplete();
+            }
+        }, BackpressureStrategy.ERROR)
+                .observeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Integer>() {
+                    @Override
+                    public void onSubscribe(Subscription s) {
+                        Log.d(TAG, "onSubscribe: ");
+                        s.request(Long.MAX_VALUE);
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+                        Log.d(TAG, "onNext: " + integer);
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        Log.d(TAG, "onError: ");
+                        t.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "onComplete: ");
+                    }
+        });
+
     }
 }
