@@ -179,8 +179,11 @@ public class MainActivity extends AppCompatActivity {
                 }
                 e.onComplete();
             }
-        }, BackpressureStrategy.ERROR)
-                .observeOn(Schedulers.io())
+        }, BackpressureStrategy.BUFFER)
+                /**
+                 * Strategy: MISSING, ERROR, BUFFER, DROP, LATEST
+                 */
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<Integer>() {
                     @Override
