@@ -306,33 +306,33 @@ public class MainActivity extends AppCompatActivity {
                         s.onComplete();
                     }
                 })
-                .subscribe(new Subscriber<Integer>() {
+                .doOnSubscribe(new Consumer<Subscription>() {
                     @Override
-                    public void onSubscribe(Subscription s) {
-                        Log.d(TAG, "onSubscribe: ");
-                        s.request(1);
+                    public void accept(Subscription subscription) throws Exception {
+                        Log.d(TAG, "accept: subscription");
+                        subscription.request(1);
                     }
-
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Consumer<Integer>() {
                     @Override
-                    public void onNext(Integer integer) {
-                        try {
-                            Log.d(TAG, "onNext: " + integer);
-                            TimeUnit.SECONDS.sleep(2);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                    public void accept(Integer integer) throws Exception {
+                        Log.d(TAG, "accept: onNext: " + integer);
                     }
-
+                })
+                .doOnComplete(new Action() {
                     @Override
-                    public void onError(Throwable t) {
-                        Log.d(TAG, "onError: ");
-                        t.printStackTrace();
+                    public void run() throws Exception {
+                        Log.d(TAG, "run: complete");
                     }
-
+                })
+                .doOnError(new Consumer<Throwable>() {
                     @Override
-                    public void onComplete() {
-                        Log.d(TAG, "onComplete: ");
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.d(TAG, "accept: Error:");
+                        throwable.printStackTrace();
                     }
-                });
+                })
+                .subscribe();
     }
 }
