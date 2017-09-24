@@ -9,6 +9,7 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
@@ -21,6 +22,7 @@ import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
@@ -232,5 +234,14 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 });
+    }
+
+    public void onCompletableClicked(View view) {
+        Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                Log.d(TAG, "run: Completable");
+            }
+        }).subscribe();
     }
 }
