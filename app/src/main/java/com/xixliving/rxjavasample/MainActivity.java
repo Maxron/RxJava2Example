@@ -16,6 +16,8 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -104,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(@NonNull Throwable e) {
-                Log.d(TAG, "onError: " + e );
+                Log.d(TAG, "onError: " + e);
             }
 
             @Override
@@ -207,7 +209,28 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete() {
                         Log.d(TAG, "onComplete: ");
                     }
-        });
+                });
 
+    }
+
+    public void onSingleClicked(View view) {
+        Single.just(1)
+                .subscribe(new SingleObserver<Integer>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        Log.d(TAG, "onSubscribe: ");
+                    }
+
+                    @Override
+                    public void onSuccess(@NonNull Integer integer) {
+                        Log.d(TAG, "onSuccess: " + integer);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Log.d(TAG, "onError: " + e);
+                        e.printStackTrace();
+                    }
+                });
     }
 }
