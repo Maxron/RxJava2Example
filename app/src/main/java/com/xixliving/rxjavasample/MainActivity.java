@@ -1,15 +1,19 @@
 package com.xixliving.rxjavasample;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Completable;
+import io.reactivex.CompletableEmitter;
+import io.reactivex.CompletableOnSubscribe;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
@@ -243,5 +247,37 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "run: Completable");
             }
         }).subscribe();
+    }
+
+    public void onCompletableWithThenClicked(View view) {
+        /**
+         * Reference: http://www.jianshu.com/p/45309538ad94
+         */
+        Completable.create(new CompletableOnSubscribe() {
+            @Override
+            public void subscribe(@NonNull CompletableEmitter e) throws Exception {
+                // Can initialize or check something here.
+                TimeUnit.SECONDS.sleep(1);
+                e.onComplete();
+            }
+        })
+                .andThen(Observable.range(1, 10))
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+                        Log.d(TAG, "accept: " + integer);
+                    }
+                });
+
+        /* The same effect of above.
+        Completable.timer(1, TimeUnit.SECONDS)
+                .andThen(Observable.range(1, 10))
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+                        Log.d(TAG, "accept: " + integer);
+                    }
+                });
+        */
     }
 }
