@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
@@ -279,5 +280,59 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         */
+    }
+
+    public void onCompletableAndThen2(View view) {
+        Completable.create(new CompletableOnSubscribe() {
+            @Override
+            public void subscribe(@NonNull CompletableEmitter e) throws Exception {
+                /**
+                 * Can prepare or initialize something here.
+                 */
+                Log.d(TAG, "subscribe: initialized something ...");
+                TimeUnit.SECONDS.sleep(1);
+                e.onComplete();
+            }
+        })
+                .observeOn(Schedulers.newThread())
+                .andThen(new Publisher<Integer>() {
+                    @Override
+                    public void subscribe(Subscriber<? super Integer> s) {
+                        Log.d(TAG, "subscribe: start");
+                        for (int i = 0; i < 10; i++) {
+                            Log.d(TAG, "subscribe: onNext " + i);
+                            s.onNext(i);
+                        }
+                        s.onComplete();
+                    }
+                })
+                .subscribe(new Subscriber<Integer>() {
+                    @Override
+                    public void onSubscribe(Subscription s) {
+                        Log.d(TAG, "onSubscribe: ");
+                        s.request(1);
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+                        try {
+                            Log.d(TAG, "onNext: " + integer);
+                            TimeUnit.SECONDS.sleep(2);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        Log.d(TAG, "onError: ");
+                        t.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "onComplete: ");
+                    }
+                });
     }
 }
