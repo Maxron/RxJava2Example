@@ -164,6 +164,13 @@
                 android:onClick="onMaybeClicked"
                 android:text="Maybe" />
 
+            <Button
+                android:id="@+id/button11"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onMapClicked"
+                android:text="Map" />
+
         </LinearLayout>
     </ScrollView>
 

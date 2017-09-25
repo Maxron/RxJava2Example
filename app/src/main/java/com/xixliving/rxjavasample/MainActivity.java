@@ -9,6 +9,8 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
@@ -32,6 +34,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
@@ -313,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void accept(Subscription subscription) throws Exception {
                         Log.d(TAG, "accept: subscription");
-                    subscription.request(1);
+                        subscription.request(1);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -367,5 +370,30 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "run: complete !!");
             }
         }).subscribe();
+    }
+
+    public void onMapClicked(View view) {
+        final Map<Integer, String> contacts = new HashMap<>();
+        contacts.put(1, "aaa");
+        contacts.put(2, "bbb");
+        contacts.put(3, "ddd");
+        contacts.put(4, "xxxx");
+
+        Observable.range(1, contacts.size())
+                .map(new Function<Integer, String>() {
+                    @Override
+                    public String apply(@NonNull Integer integer) throws Exception {
+                        Log.d(TAG, "apply: integer" + integer);
+                        Log.d(TAG, "apply: return value: " + contacts.get(integer));
+                        return contacts.get(integer);
+                    }
+                })
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        Log.d(TAG, "accept: " + s);
+                    }
+                });
+
     }
 }
