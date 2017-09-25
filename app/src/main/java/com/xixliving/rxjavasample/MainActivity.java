@@ -18,6 +18,9 @@ import io.reactivex.CompletableOnSubscribe;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.Maybe;
+import io.reactivex.MaybeEmitter;
+import io.reactivex.MaybeOnSubscribe;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -310,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void accept(Subscription subscription) throws Exception {
                         Log.d(TAG, "accept: subscription");
-                        subscription.request(1);
+                    subscription.request(1);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -334,5 +337,35 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .subscribe();
+    }
+
+    public void onMaybeClicked(View view) {
+        Maybe.create(new MaybeOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(@NonNull MaybeEmitter<Integer> e) throws Exception {
+                Log.d(TAG, "subscribe: ");
+                Log.d(TAG, "subscribe: emmit success 1");
+                e.onSuccess(1);
+                Log.d(TAG, "subscribe: emmit success 2, but only 1 can be accept.");
+                e.onSuccess(2);
+                Log.d(TAG, "subscribe: emmit complete,");
+                e.onComplete();
+
+                /**
+                 *  Only one method can be invoke and just invoke a methond in this block.
+                 *  onSuccess or onComplete can be invoke in this block.
+                 */
+            }
+        }).doOnSuccess(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+                Log.d(TAG, "accept: " + integer);
+            }
+        }).doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                Log.d(TAG, "run: complete !!");
+            }
+        }).subscribe();
     }
 }
